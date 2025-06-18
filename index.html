@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rock Scissor Paper</title>
+    <style>
+        *{
+            padding: 0;
+            margin: 0;
+            font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+            background: black;
+            color: white;
+        }
+        .main-wrapper{
+            width: 100%;
+        }
+        .main-wrapper .content{
+            width: 90%;
+            margin: 0 5%;
+            justify-items: center;
+            padding: 40px 0;
+        }
+        .main-wrapper .content .topic{
+            margin-bottom: 30px;
+        }
+
+        .main-wrapper .content .btns{
+            margin-bottom: 30px;
+            
+        }
+        .main-wrapper .content .btns img{
+            width: 60px;
+            height: 60px;
+            background-color: transparent;
+        }
+
+        .main-wrapper .content .btns button{
+            margin: 0 10px;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 2px solid white;
+            cursor: pointer;
+            transition: transform .20s;
+        }
+        .main-wrapper .content .btns button:hover{
+            transform: scale(1.1);
+            transition: transform .20s;
+        }
+        .main-wrapper .content .btns button:active{
+            background-color: white;
+        }
+        .main-wrapper .content .btns img:hover{
+            filter: drop-shadow(0 0 20px rgb(255, 255, 255));
+        }
+        .main-wrapper .content .subg-content{
+            margin-right: 10%;
+
+        }
+        .main-wrapper .content .subg-content p{
+            margin-bottom: 30px;
+            font-size: 20px;
+            width: 400px;
+            display: flex;
+            align-items: center;
+        }
+        .reset-btn{
+            width: 400px;
+            margin-right: 10%;
+        }
+        .main-wrapper .content .reset-btn button{
+            font-size: 20px;
+            padding: 8px 15px;
+            border: 2px solid white;
+            cursor: pointer;
+            transition: background .30s;
+        }
+
+        .main-wrapper .content .reset-btn button:hover{
+            color: black;
+            background: white;
+            transition: background .30s;
+        }
+         .main-wrapper .content .reset-btn button:active{
+            opacity: .4;
+         }
+
+        .main-wrapper .content .subg-content .js-move-image{
+            width: 50px;
+            height: 50px;
+            margin-right: 30px;
+            margin-left: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-wrapper">
+        <div class="content">
+            <div class="topic">
+                <h2>Welcome to <span>Rock Scissor Paper Game</span></h2>
+            </div>
+            <div class="btns">
+                <button onclick="getoption('rock');"><img src="rock-emoji.png" alt="rock-emoji"></button>
+                <button onclick="getoption('scissors');"><img src="scissors-emoji.png" alt="Scissor-emoji"></button>
+                <button onclick="getoption('paper');"><img src="paper-emoji.png" alt="Paper-emoji"></button>
+            </div>
+            <div class="subg-content">
+                <p class="js-status"></p>
+                <p class="js-move"></p>
+                <p class="js-scores"></p>
+            </div>
+            <div class="reset-btn">
+                <button onclick="getoption('Reset')">Reset</button>
+            </div>
+                
+            
+            
+            
+        </div>
+    </div>
+    <script>
+        // const score = {
+        //     win : 0,
+        //     lose : 0,
+        //     Draw : 0
+        // };
+        const score = JSON.parse(localStorage.getItem('score-data')) || {win:0,Draw:0,lose:0};
+
+        function computerMove(){
+            const random = Math.random()*100;
+            if (random>=0 && random<33){
+                return 'rock';
+            }
+            else if(random>=33 && random<65){
+                return 'scissors';
+            }
+            else{
+                return 'paper';
+            }
+        }
+
+        function getoption(playerMove){
+            let compMove = computerMove();
+            let result='';
+            if (playerMove==='rock'){
+                if(compMove==='rock'){
+                    result = 'Draw.';
+                }
+                else if(compMove==='paper'){
+                    result = 'You win.';
+                }
+                else{
+                    result = 'You Lose.';
+                }
+            }
+            else if (playerMove==='paper'){
+                if(compMove==='rock'){
+                    result = 'You win.';
+                }
+                else if(compMove==='paper'){
+                    result = 'Draw.';
+                }
+                else{
+                    result = 'You Lose.';
+                }
+            }
+            else if(playerMove==='scissors'){
+                if(compMove==='rock'){
+                    result = 'You Lose.';
+                }
+                else if(compMove==='paper'){
+                    result = 'You win.';
+                }
+                else{
+                    result = 'Draw.';
+                }
+            }
+            
+            if (result==='You win.'){
+                score.win+=1;
+            }
+            else if(result==='You Lose.'){
+                score.lose +=1;
+            }
+            else if(result==='Draw.'){
+                score.Draw +=1;
+            }
+            else{
+                score.win =0,
+                score.Draw =0,
+                score.lose =0
+                localStorage.removeItem('score-data');
+                updateScoreStatus();
+                return 0;
+            }
+            localStorage.setItem('score-data',JSON.stringify(score));
+            // alert(`Your choose ${playerMove}. The computer choose ${compMove}. ${result} \nWin : ${score.win} , Lose : ${score.lose} , Draw : ${score.Draw}`);
+            updateScoreStatus();
+
+            
+
+            const statueElement = document.querySelector('.js-status');
+            statueElement.innerText = `${result}`;
+            const moveElement = document.querySelector('.js-move');
+            moveElement.innerHTML = `You <img src="${playerMove}-emoji.png" class="js-move-image"> <img src="${compMove}-emoji.png" class="js-move-image"> Computer`
+        }
+
+
+        updateScoreStatus();
+
+        function updateScoreStatus(){
+            const scoreElement = document.querySelector('.js-scores');
+            scoreElement.innerText = `Wins: ${score.win}, Losses: ${score.lose}, Draws: ${score.Draw}`
+        }
+    </script>
+</body>
+</html>
